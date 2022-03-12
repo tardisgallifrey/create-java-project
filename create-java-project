@@ -1,0 +1,65 @@
+#!/bin/bash
+
+# A script to create all the correct folders and architecture,
+# plus the necessary beginning files and resources to 
+# develop and build a java project and produce a *.jar file
+
+# Follows ideas in: https://dzone.com/articles/java-8-how-to-create-executable-fatjar-without-ide
+
+# name of project required as command line arg because it is the 
+# project folder name as well
+if [ -z $1 ]; then
+        echo "Usage: create-java-project NAMEofMYproject"
+        echo "     Name of project as argument is required."
+        echo "     Exiting"
+        exit 0
+fi
+
+# create project folder and CD into it
+mkdir $1
+cd $1
+
+# create project folders and structure
+mkdir ./libs
+mkdir ./out
+mkdir ./src
+mkdir ./src/main
+mkdir ./src/main/java
+mkdir ./src/main/java/com
+mkdir ./src/main/java/com/tardisgallifrey
+
+# Here is where I think I kept messing up on my own.
+# Jar expects your source code folder structure to match
+# your package folder structure.  A guess.
+mkdir ./src/main/java/com/tardisgallifrey/$1
+mkdir ./src/main/resources
+mkdir ./src/main/resources/META-INF
+
+# create the manifest file.  Exact name not important
+# but must match scripts
+touch ./src/main/resources/META-INF/MANIFEST.FM
+
+# create initial "Hello World" java source file
+touch ./src/main/java/com/tardisgallifrey/$1/App.java
+
+# create compile bash file
+touch javacompile
+
+# create JAR bash file to build jar file
+touch jar-it
+
+# create README.md for github use
+touch README.md
+
+# Fille all necessary files with proper text
+printf '#!/bin/bash\njavac -cp ./src/main/java ./src/main/java/com/tardisgallifrey/'$1'/*.java -d ./out/\n'>javacompile
+printf '#!/bin/bash\njar cvfm '$1'.jar ./src/main/resources/META-INF/MANIFEST.FM -C ./out/ .\n'>jar-it
+printf 'package com.tardisgallifrey.'$1';\npublic class App{\n     public static void main(String args[]){\n     System.out.println("Hello World");\n     }\n}\n'>./src/main/java/com/tardisgallifrey/$1/App.java
+printf 'Manifest-Version: 1.0\nClass-Path: .\nMain-Class: com.tardisgallifrey.'$1'.App\n\n'>./src/main/resources/META-INF/MANIFEST.FM
+
+# chmod compiler and JAR build to be executable
+chmod +x javacompile
+chmod +x jar-it
+
+# bash end
+
