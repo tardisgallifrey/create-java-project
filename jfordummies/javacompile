@@ -1,0 +1,2 @@
+#!/bin/bash
+javac -cp ./src/main/java ./src/main/java/com/tardisgallifrey/jfordummies/*.java -d ./out/
